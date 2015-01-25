@@ -1,6 +1,6 @@
 # Flux::Rails
 
-TODO: Write a gem description
+[Flux](https://github.com/facebook/flux) for Rails Asset Pipeline
 
 ## Installation
 
@@ -33,3 +33,9 @@ Require flux in your application.js
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
 5. Create a new Pull Request
+
+## Acknowledgements
+
+[Flux](https://github.com/facebook/flux) by [Facebook](http://www.facebook.com)
+
+Copyright [Mario Peixoto](https://github.com/mariopeixoto), released under the [MIT license](https://github.com/mariopeixoto/flux-rails/LICENSE).
