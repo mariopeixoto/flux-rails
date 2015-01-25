@@ -11,7 +11,7 @@
 module.exports.Dispatcher = require('./lib/Dispatcher')
 
 },{"./lib/Dispatcher":2}],2:[function(require,module,exports){
-/**
+/*
  * Copyright (c) 2014, Facebook, Inc.
  * All rights reserved.
  *
@@ -21,7 +21,6 @@ module.exports.Dispatcher = require('./lib/Dispatcher')
  *
  * @providesModule Dispatcher
  * @typechecks
- * @preventMunge
  */
 
 "use strict";
@@ -106,10 +105,14 @@ var _prefix = 'ID_';
  *     flightDispatcher.register(function(payload) {
  *       switch (payload.actionType) {
  *         case 'country-update':
- *         case 'city-update':
  *           flightDispatcher.waitFor([CityStore.dispatchToken]);
  *           FlightPriceStore.price =
  *             getFlightPriceStore(CountryStore.country, CityStore.city);
+ *           break;
+ *
+ *         case 'city-update':
+ *           FlightPriceStore.price =
+ *             FlightPriceStore(CountryStore.country, CityStore.city);
  *           break;
  *     }
  *   });
@@ -120,11 +123,11 @@ var _prefix = 'ID_';
  */
 
   function Dispatcher() {
-    this._callbacks = {};
-    this._isPending = {};
-    this._isHandled = {};
-    this._isDispatching = false;
-    this._pendingPayload = null;
+    this.$Dispatcher_callbacks = {};
+    this.$Dispatcher_isPending = {};
+    this.$Dispatcher_isHandled = {};
+    this.$Dispatcher_isDispatching = false;
+    this.$Dispatcher_pendingPayload = null;
   }
 
   /**
@@ -136,7 +139,7 @@ var _prefix = 'ID_';
    */
   Dispatcher.prototype.register=function(callback) {
     var id = _prefix + _lastID++;
-    this._callbacks[id] = callback;
+    this.$Dispatcher_callbacks[id] = callback;
     return id;
   };
 
@@ -147,11 +150,11 @@ var _prefix = 'ID_';
    */
   Dispatcher.prototype.unregister=function(id) {
     invariant(
-      this._callbacks[id],
+      this.$Dispatcher_callbacks[id],
       'Dispatcher.unregister(...): `%s` does not map to a registered callback.',
       id
     );
-    delete this._callbacks[id];
+    delete this.$Dispatcher_callbacks[id];
   };
 
   /**
@@ -163,14 +166,14 @@ var _prefix = 'ID_';
    */
   Dispatcher.prototype.waitFor=function(ids) {
     invariant(
-      this._isDispatching,
+      this.$Dispatcher_isDispatching,
       'Dispatcher.waitFor(...): Must be invoked while dispatching.'
     );
     for (var ii = 0; ii < ids.length; ii++) {
       var id = ids[ii];
-      if (this._isPending[id]) {
+      if (this.$Dispatcher_isPending[id]) {
         invariant(
-          this._isHandled[id],
+          this.$Dispatcher_isHandled[id],
           'Dispatcher.waitFor(...): Circular dependency detected while ' +
           'waiting for `%s`.',
           id
@@ -178,11 +181,11 @@ var _prefix = 'ID_';
         continue;
       }
       invariant(
-        this._callbacks[id],
+        this.$Dispatcher_callbacks[id],
         'Dispatcher.waitFor(...): `%s` does not map to a registered callback.',
         id
       );
-      this._invokeCallback(id);
+      this.$Dispatcher_invokeCallback(id);
     }
   };
 
@@ -193,19 +196,19 @@ var _prefix = 'ID_';
    */
   Dispatcher.prototype.dispatch=function(payload) {
     invariant(
-      !this._isDispatching,
+      !this.$Dispatcher_isDispatching,
       'Dispatch.dispatch(...): Cannot dispatch in the middle of a dispatch.'
     );
-    this._startDispatching(payload);
+    this.$Dispatcher_startDispatching(payload);
     try {
-      for (var id in this._callbacks) {
-        if (this._isPending[id]) {
+      for (var id in this.$Dispatcher_callbacks) {
+        if (this.$Dispatcher_isPending[id]) {
           continue;
         }
-        this._invokeCallback(id);
+        this.$Dispatcher_invokeCallback(id);
       }
     } finally {
-      this._stopDispatching();
+      this.$Dispatcher_stopDispatching();
     }
   };
 
@@ -215,7 +218,7 @@ var _prefix = 'ID_';
    * @return {boolean}
    */
   Dispatcher.prototype.isDispatching=function() {
-    return this._isDispatching;
+    return this.$Dispatcher_isDispatching;
   };
 
   /**
@@ -225,10 +228,10 @@ var _prefix = 'ID_';
    * @param {string} id
    * @internal
    */
-  Dispatcher.prototype._invokeCallback=function(id) {
-    this._isPending[id] = true;
-    this._callbacks[id](this._pendingPayload);
-    this._isHandled[id] = true;
+  Dispatcher.prototype.$Dispatcher_invokeCallback=function(id) {
+    this.$Dispatcher_isPending[id] = true;
+    this.$Dispatcher_callbacks[id](this.$Dispatcher_pendingPayload);
+    this.$Dispatcher_isHandled[id] = true;
   };
 
   /**
@@ -237,13 +240,13 @@ var _prefix = 'ID_';
    * @param {object} payload
    * @internal
    */
-  Dispatcher.prototype._startDispatching=function(payload) {
-    for (var id in this._callbacks) {
-      this._isPending[id] = false;
-      this._isHandled[id] = false;
+  Dispatcher.prototype.$Dispatcher_startDispatching=function(payload) {
+    for (var id in this.$Dispatcher_callbacks) {
+      this.$Dispatcher_isPending[id] = false;
+      this.$Dispatcher_isHandled[id] = false;
     }
-    this._pendingPayload = payload;
-    this._isDispatching = true;
+    this.$Dispatcher_pendingPayload = payload;
+    this.$Dispatcher_isDispatching = true;
   };
 
   /**
@@ -251,9 +254,9 @@ var _prefix = 'ID_';
    *
    * @internal
    */
-  Dispatcher.prototype._stopDispatching=function() {
-    this._pendingPayload = null;
-    this._isDispatching = false;
+  Dispatcher.prototype.$Dispatcher_stopDispatching=function() {
+    this.$Dispatcher_pendingPayload = null;
+    this.$Dispatcher_isDispatching = false;
   };
 
 
