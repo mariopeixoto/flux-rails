@@ -20,7 +20,11 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+Require flux in your application.js
+
+  ```js
+  //= require flux
+  ```
 
 ## Contributing
 
