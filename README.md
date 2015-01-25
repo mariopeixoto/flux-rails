@@ -1,4 +1,4 @@
-# Flux::Rails
+# flux-rails
 
 [Flux](https://github.com/facebook/flux) for Rails Asset Pipeline
 
@@ -6,9 +6,9 @@
 
 Add this line to your application's Gemfile:
 
-```ruby
-gem 'flux-rails'
-```
+  ```ruby
+  gem 'flux-rails'
+  ```
 
 And then execute:
 
